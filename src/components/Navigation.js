@@ -45,8 +45,12 @@ Navigation.defaultProps = {
             path: "/"
         },
         {
-            name: "ScrollProgress",
+            name: "Scroll Progress",
             path: "/scroll-progress"
+        },
+        {
+            name: "Infinite Scroll",
+            path: "/infinite-scroll"
         },
     ]
 }
