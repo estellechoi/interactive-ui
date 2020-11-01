@@ -1,7 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
 import FirstSection from "./parallax-scroll/FirstSection";
+import SecondSection from "./parallax-scroll/SecondSection";
 import { useEventListener } from "./../hooks/useEventListener"
+import { useIntersectionObserver } from "./../hooks/useIntersectionObserver"
+
 
 const Section = styled.section`
     background-color: #252526;
@@ -15,6 +18,17 @@ const SubSection = styled.section`
     height: 100vh;
     overflow: hidden;
     background-color: #000;
+    transition: all 0.4s;
+
+    &:nth-of-type(2) {
+        z-index: 1;
+        box-shadow: 0 2px 20px 8px rgba(0,0,0,0.3), 
+                    0 -10px 20px 8px rgba(0,0,0,0.5);
+    }
+
+    &.white-bg {
+        background-color: rgba(255, 255, 255, 1);
+    }
 
     &::after {
         content: "";
@@ -34,16 +48,20 @@ const SubSection = styled.section`
 
 
 export default function ParallaxScroll() {
-    const section = useRef();
+    const firstSection = useRef();
+    const thirdSection = useRef();
+
     const [isScrolling, setIsScrolling] = useState(false);
     const [isActive, setIsActive] = useState(true);
+    const [is3rdActive, setIs3rdActive] = useState(false);
+
 
     let secTop;
     let secHeight;
     let secBottom;
 
     const checkIsScrolling = (isPrevActive) => {
-        const secOffsetTop = section.current.getBoundingClientRect().top;
+        const secOffsetTop = firstSection.current.getBoundingClientRect().top;
 
         if (isPrevActive && Math.abs(secOffsetTop) >= secHeight)
             setIsScrolling(false);
@@ -76,27 +94,38 @@ export default function ParallaxScroll() {
     }
 
     useEffect(() => {
-        secTop = section.current.offsetTop;
-        secHeight = section.current.clientHeight;
+        secTop = firstSection.current.offsetTop;
+        secHeight = firstSection.current.clientHeight;
         secBottom = secTop + secHeight;
     });
 
     useEventListener(window, "scroll", checkSectionEntry);
+    useIntersectionObserver([
+        {
+            el: thirdSection,
+            handler: () => {
+                if (!is3rdActive) setIs3rdActive(true);
+            },
+            antiHandler: () => {
+                if (is3rdActive) setIs3rdActive(false);
+            }
+        }
+    ], { threshold: 0.4 });
 
     return (
         <Section>
             <h2 className="hidden">Page-like Scrolling and Parallax Scroll-able View</h2>
-            <SubSection ref={section} className={`${isActive ? '' : 'inactivated'}`}>
+            <SubSection ref={firstSection} className={`${isActive ? '' : 'inactivated'}`}>
                 <FirstSection/>
             </SubSection>
             <SubSection>
-                Hello 2nd
+                <SecondSection/>
+            </SubSection>
+            <SubSection ref={thirdSection} className={`${is3rdActive ? 'white-bg' : ''}`}>
+                3rd
             </SubSection>
             <SubSection>
-                Hello 3rd
-            </SubSection>
-            <SubSection>
-                Hello 4th
+                4th
             </SubSection>
         </Section>
     );
