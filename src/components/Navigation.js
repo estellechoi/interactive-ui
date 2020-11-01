@@ -52,5 +52,9 @@ Navigation.defaultProps = {
             name: "Infinite Scroll",
             path: "/infinite-scroll"
         },
+        {
+            name: 'ParallaxScroll',
+            path: '/parallax-scroll'
+        }
     ]
 }
