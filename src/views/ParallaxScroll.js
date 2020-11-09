@@ -54,13 +54,15 @@ export default function ParallaxScroll() {
     const [isScrolling, setIsScrolling] = useState(false);
     const [isActive, setIsActive] = useState(true);
     const [is3rdActive, setIs3rdActive] = useState(false);
+    const secTop = useRef(0);
+    const secHeight = useRef(0);
+    const secBottom = useRef(0);
 
+    // let secTop;
+    // let secHeight;
+    // let secBottom;
 
-    let secTop;
-    let secHeight;
-    let secBottom;
-
-    const checkIsScrolling = (isPrevActive) => {
+    const detectScrolling = (isPrevActive) => {
         const secOffsetTop = firstSection.current.getBoundingClientRect().top;
 
         if (isPrevActive && Math.abs(secOffsetTop) >= secHeight)
@@ -68,7 +70,7 @@ export default function ParallaxScroll() {
         else if (!isPrevActive && secOffsetTop === secTop)
             setIsScrolling(false);
         else
-            window.requestAnimationFrame(() => checkIsScrolling(isPrevActive));
+            window.requestAnimationFrame(() => detectScrolling(isPrevActive));
     }
 
     const turnSection = () => {
@@ -78,7 +80,7 @@ export default function ParallaxScroll() {
             top: isPrevActive ? secBottom : secTop,
             behavior: 'smooth'
         });
-        window.requestAnimationFrame(() => checkIsScrolling(isPrevActive));    
+        window.requestAnimationFrame(() => detectScrolling(isPrevActive));    
         setIsActive(!isPrevActive);
     }
     
@@ -94,9 +96,9 @@ export default function ParallaxScroll() {
     }
 
     useEffect(() => {
-        secTop = firstSection.current.offsetTop;
-        secHeight = firstSection.current.clientHeight;
-        secBottom = secTop + secHeight;
+        secTop.current = firstSection.current.offsetTop;
+        secHeight.current = firstSection.current.clientHeight;
+        secBottom.current = secTop + secHeight;
     });
 
     useEventListener(window, "scroll", checkSectionEntry);
